@@ -1,0 +1,15 @@
+{
+	"name": "Ubuntu",
+	"dockerComposeFile": "../docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/home/vscode/app",
+	"shutdownAction": "stopCompose",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"Prisma.prisma"
+			]
+		}
+	}
+}
