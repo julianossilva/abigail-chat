@@ -42,7 +42,7 @@ export class Email {
     }
 
     get email(): string {
-        return this.email
+        return this._email
     }
 
     equal(other: Email): boolean {
