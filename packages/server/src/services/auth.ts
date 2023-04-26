@@ -19,6 +19,19 @@ export class Password {
     }
 }
 
+export class UserNotFoundError extends Error {
+    constructor() {
+        super("user not found error")
+    }
+}
+
+export class WrongPasswordError extends Error {
+    constructor() {
+        super("wrong password error")
+    }
+}
+
+
 export class AuthService {
 
     constructor(
@@ -47,22 +60,21 @@ export class AuthService {
         await this.userRepository.create(user)
     }
 
-    async authenticate(anUsername: string, aPassword: string) {
+    async authenticate(anUsername: string, aPassword: string): Promise<string> {
         let username = new Username(anUsername);
         let password = new Password(aPassword);
-
-
+        
         let user = await this.userRepository.findByUsername(username)
         if (user == null) {
-            return false
+            throw new UserNotFoundError()
         }
 
         let hash = new PasswordHash(user.hash.hash)
 
         if (await this.hashManager.compare(password, hash)) {
-            return true
-        } else {
-            return false;
+            throw new Error("return a token")
         }
+
+        throw new WrongPasswordError()
     }
 }

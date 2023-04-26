@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express'
-import { AuthService } from '../services/auth'
+import { AuthService, UserNotFound } from '../services/auth'
 import joi from 'joi'
 import { RegistrationError } from '../services/errors/auth-errors'
 
@@ -37,7 +37,8 @@ export function authRoutes(authService: AuthService) {
         }
     })
 
-    router.post("/singin", async (req: Request, res: Response) => {
+    router.post("/signin", async (req: Request, res: Response) => {
+        
         let { username, password } = req.body
 
         let usernameErr = joi.string().required().validate(username).error
@@ -50,7 +51,18 @@ export function authRoutes(authService: AuthService) {
             return
         }
 
-        authService.authenticate(username, password)
+        try {
+            let token = authService.authenticate(username, password)
+            res.status(200).send({
+                token
+            })
+        } catch(err) {
+            if (err instanceof UserNotFound) {
+                res.status(404).send()
+            } else {
+                res.status(500).send()
+            }
+        }
     })
 
     return router
