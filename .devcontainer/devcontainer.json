@@ -8,7 +8,8 @@
 		"vscode": {
 			"extensions": [
 				"ms-azuretools.vscode-docker",
-				"Prisma.prisma"
+				"Prisma.prisma",
+				"firsttris.vscode-jest-runner"
 			]
 		}
 	}
