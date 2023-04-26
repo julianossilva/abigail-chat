@@ -15,3 +15,13 @@ model User {
 
   @@map("users")
 }
+
+model Message {
+  id Int @unique @default(autoincrement())
+
+  fromId String @db.Uuid
+  toId   String @db.Uuid
+
+  date    DateTime @db.Timestamp()
+  content String   @db.VarChar(255)
+}
