@@ -1,9 +1,9 @@
-import { Email, User, UserID, Username } from "../model/user";
+import { Email, PasswordHash, User, UserID, Username } from "../model/user";
 import { UserRepository } from "../repository/user-repository";
 import { HashManager } from "./hash";
 import { UUIDGenerator } from "./uuid";
 
-export class Password{
+export class Password {
     private _password: string
 
     constructor(password: string) {
@@ -23,9 +23,9 @@ export class AuthService {
 
     constructor(
         private uuidGenerator: UUIDGenerator,
-        private hashGenerator: HashManager,
+        private hashManager: HashManager,
         private userRepository: UserRepository
-    ) {}
+    ) { }
 
     async register(aUsername: string, anEmail: string, aPassword: string) {
         let uuid = await this.uuidGenerator.v4()
@@ -35,7 +35,7 @@ export class AuthService {
         let email = new Email(anEmail)
         let password = new Password(aPassword);
 
-        let hash = await this.hashGenerator.hash(password)
+        let hash = await this.hashManager.hash(password)
 
         let user = new User(
             userID,
@@ -45,5 +45,24 @@ export class AuthService {
         )
 
         await this.userRepository.create(user)
+    }
+
+    async authenticate(anUsername: string, aPassword: string) {
+        let username = new Username(anUsername);
+        let password = new Password(aPassword);
+
+
+        let user = await this.userRepository.findByUsername(username)
+        if (user == null) {
+            return false
+        }
+
+        let hash = new PasswordHash(user.hash.hash)
+
+        if (await this.hashManager.compare(password, hash)) {
+            return true
+        } else {
+            return false;
+        }
     }
 }

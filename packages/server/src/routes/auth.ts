@@ -37,5 +37,21 @@ export function authRoutes(authService: AuthService) {
         }
     })
 
+    router.post("/singin", async (req: Request, res: Response) => {
+        let { username, password } = req.body
+
+        let usernameErr = joi.string().required().validate(username).error
+        let passwordErr = joi.string().required().validate(password).error
+
+        if (usernameErr || passwordErr) {
+            res.status(400).send({
+                message: "param error"
+            })
+            return
+        }
+
+        authService.authenticate(username, password)
+    })
+
     return router
 }
