@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client"
 import { MessageRepositoryPrisma } from "./message-repository"
 import { UserID } from "../model/user"
-import { Time } from "../core/timestamp"
 import { Content, MessageID } from "../model/message"
+import { DateTime } from "../core/timestamp"
 
 let prismaClient: PrismaClient
 
@@ -27,7 +27,7 @@ test("create messages", async () => {
     let message = await messageRepository.create(
         new UserID(from),
         new UserID(to),
-        new Time(sended),
+        new DateTime(sended),
         new Content(content)
     )
 

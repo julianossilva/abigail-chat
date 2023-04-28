@@ -1,13 +1,13 @@
-import { User, UserID, Username } from "../model/user";
+import { Email, PasswordHash, User, UserID, Username } from "../model/user";
 
 export class IDAlreadInUse extends Error {
-    constructor(){
+    constructor() {
         super("user id already in use")
     }
 }
 
 export class UsernameAlreadyInUse extends Error {
-    constructor(){
+    constructor() {
         super("username already in use")
     }
 }
@@ -20,13 +20,13 @@ export class EmailAlreadyInUse extends Error {
 
 export interface UserRepository {
     create(user: User): Promise<void>
-    find(userID: UserID): Promise<User|null>
-    findByUsername(username: Username): Promise<User|null>
+    find(userID: UserID): Promise<User | null>
+    findByUsername(username: Username): Promise<User | null>
 }
 
-export class UserRepositoryInMemory implements UserRepository{
+export class UserRepositoryInMemory implements UserRepository {
     private _users: User[]
-    
+
     constructor() {
         this._users = []
     }
@@ -34,9 +34,9 @@ export class UserRepositoryInMemory implements UserRepository{
     async create(user: User): Promise<void> {
         this._users.push(user)
     }
-    
+
     async find(userID: UserID): Promise<User | null> {
-        let user = this._users.find((u)=>{
+        let user = this._users.find((u) => {
             return u.id.equal(userID)
         })
 
@@ -44,7 +44,7 @@ export class UserRepositoryInMemory implements UserRepository{
     }
 
     async findByUsername(username: Username): Promise<User | null> {
-        let user = this._users.find((u)=>{
+        let user = this._users.find((u) => {
             return u.username.equal(username)
         })
 

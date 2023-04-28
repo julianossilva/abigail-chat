@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Time } from "../core/timestamp";
+import { DateTime } from "../core/timestamp";
 import { Content, Message, MessageID } from "../model/message";
 import { UserID } from "../model/user";
 import { MessageRepository } from "../repository/message-repository";
@@ -24,12 +24,12 @@ export class MessageRepositoryPrisma implements MessageRepository {
             new MessageID(messageData.id),
             new UserID(messageData.fromId),
             new UserID(messageData.toId),
-            new Time(messageData.date.toISOString()),
+            new DateTime(messageData.date.toISOString()),
             new Content(messageData.content)
         )
     }
 
-    async create(from: UserID, to: UserID, sended: Time, content: Content): Promise<Message> {
+    async create(from: UserID, to: UserID, sended: DateTime, content: Content): Promise<Message> {
         let messageData = await this._prismaClient.message.create({
             data: {
                 fromId: from.uuid,
@@ -43,7 +43,7 @@ export class MessageRepositoryPrisma implements MessageRepository {
             new MessageID(messageData.id),
             new UserID(messageData.fromId),
             new UserID(messageData.toId),
-            new Time(messageData.date.toISOString()),
+            new DateTime(messageData.date.toISOString()),
             new Content(messageData.content)
         )
     }

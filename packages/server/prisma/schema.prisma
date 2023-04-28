@@ -24,4 +24,14 @@ model Message {
 
   date    DateTime @db.Timestamp()
   content String   @db.VarChar(255)
+
+  @@map("messages")
+}
+
+model Session {
+  id         String   @id @db.VarChar(255)
+  userId     String   @db.Uuid
+  expiration DateTime @db.Timestamp()
+
+  @@map("sessions")
 }
