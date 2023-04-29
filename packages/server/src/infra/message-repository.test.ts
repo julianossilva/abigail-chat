@@ -3,18 +3,23 @@ import { MessageRepositoryPrisma } from "./message-repository"
 import { UserID } from "../model/user"
 import { Content, MessageID } from "../model/message"
 import { DateTime } from "../core/timestamp"
+import { cleanDatabase } from "../seeds/utils"
 
 let prismaClient: PrismaClient
 
-beforeEach(async () => {
+beforeAll(async ()=> {
     prismaClient = new PrismaClient()
-
-    await prismaClient.message.deleteMany()
 })
 
-afterEach(async () => {
+afterAll(async () => {
     await prismaClient.$disconnect()
 })
+
+beforeEach(async () => {
+
+    await cleanDatabase()
+})
+
 
 test("create messages", async () => {
     let messageRepository = new MessageRepositoryPrisma(prismaClient)

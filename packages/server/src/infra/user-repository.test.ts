@@ -1,15 +1,20 @@
 import { PrismaClient } from "@prisma/client"
 import { UserRepositoryPrisma } from "./user-repository"
 import { Email, PasswordHash, User, UserID, Username } from "../model/user";
+import { cleanDatabase } from "../seeds/utils";
 
 let prismaClient: PrismaClient
 
+
 beforeEach(async () => {
-    prismaClient = new PrismaClient()
-    await prismaClient.user.deleteMany()
+    await cleanDatabase()
 })
 
-afterEach(async () => {
+beforeAll(async ()=> {
+    prismaClient = new PrismaClient()
+})
+
+afterAll(async () => {
     await prismaClient.$disconnect()
 })
 

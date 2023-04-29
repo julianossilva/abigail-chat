@@ -11,6 +11,7 @@ import { MessageRepositoryPrisma } from './infra/message-repository';
 import { SessionManagerPrisma } from './infra/session';
 
 export function createApp() {
+    let SECRET_KEY= String(process.env.SECRET_KEY)
     const app = express();
     app.use(express.json())
 
@@ -24,7 +25,7 @@ export function createApp() {
      */
     let uuidGenerator = new UUIDGeneratorImpl()
     let hashManager = new HashManagerImpl()
-    let sessionManager = new SessionManagerPrisma("shhh", prismaClient)
+    let sessionManager = new SessionManagerPrisma(SECRET_KEY, prismaClient)
 
     /**
      * Repositories

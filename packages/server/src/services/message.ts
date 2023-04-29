@@ -44,4 +44,26 @@ export class MessageService {
 
         await this._messageRepository.delete(message)
     }
+
+    async listAfterID(aToken: string, other: string, id: number, max: number = 50): Promise<[Message[], number]> {
+        if (!Number.isInteger(max)) throw new Error("max needs to be an integer")
+        if (-1 > max || max > 50) throw new Error("max invalid range")
+
+        let session = await this._sessionManager.find(aToken);
+        if (session == null) throw new Error("session not found")
+
+        let currentUser = await this._userRepository.find(session.loggedUser)
+        if (currentUser == null) throw new Error("user not found")
+        let otherUser = await this._userRepository.find(new UserID(other))
+        if (otherUser == null) throw new Error("user not found")
+
+        let [messages, remain] = await this._messageRepository.listAfterID(
+            currentUser.id,
+            otherUser.id,
+            new MessageID(id),
+            max
+        )
+
+        return [messages, remain]
+    }
 }

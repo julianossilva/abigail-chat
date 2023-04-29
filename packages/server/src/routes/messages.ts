@@ -12,7 +12,7 @@ export function messageRoutes(messageService: MessageService): Router {
             res.status(400).send({
                 message: "no bearer token"
             })
-            return 
+            return
         }
         token = token.replace("Bearer ", "")
 
@@ -27,7 +27,7 @@ export function messageRoutes(messageService: MessageService): Router {
             })
             return
         }
-        
+
         try {
             let message = await messageService.send(token, to, content)
             res.send({
@@ -35,9 +35,51 @@ export function messageRoutes(messageService: MessageService): Router {
                 from: message.from.uuid,
                 to: message.to.uuid,
                 date: message.sended.isoString()
-            }) 
+            })
         } catch (error) {
             res.status(500).send()
+        }
+    })
+
+    router.get("/messages/with/:other/after/:id", async (req: Request, res: Response) => {
+        let token = req.get("Authorization") ?? ""
+
+        if (!token.startsWith("Bearer ")) {
+            res.status(400).send({
+                message: "no bearer token"
+            })
+            return
+        }
+        token = token.replace("Bearer ", "")
+
+        let id = Number(req.params["id"])
+        if (!Number.isInteger(id)) {
+            res.status(400).send({
+                message: "param error"
+            })
+            return
+        }
+
+        let other = req.params["other"]
+
+        const MAX = 20
+        try {
+            let [messages, remain] = await messageService.listAfterID(token, other, id, MAX)
+
+            res.send({
+                remain,
+                messages: messages.map(m => ({
+                    id: m.id.id,
+                    from: m.from.uuid,
+                    to: m.to.uuid,
+                    cotent: m.content.text,
+                    date: m.sended.isoString()
+                }))
+            })
+        } catch (err) {
+            res.status(500).send({
+                message: "internal server error"
+            })
         }
     })
 

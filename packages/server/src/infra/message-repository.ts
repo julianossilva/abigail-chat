@@ -1,4 +1,4 @@
-import {  PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { DateTime } from "../core/timestamp";
 import { Content, Message, MessageID } from "../model/message";
 import { UserID } from "../model/user";
@@ -9,6 +9,63 @@ export class MessageRepositoryPrisma implements MessageRepository {
 
     constructor(prisma: PrismaClient) {
         this._prismaClient = prisma
+    }
+
+    async listAfterID(id1: UserID, id2: UserID, messageID: MessageID, max: number): Promise<[Message[], number]> {
+        return await this._prismaClient.$transaction(async tx => {
+            let n = await tx.message.count({
+                where: {
+                    OR: [
+                        {
+                            id: { gt: messageID.id },
+                            fromId: id1.uuid,
+                            toId: id2.uuid
+                        },
+                        {
+                            id: { gt: messageID.id },
+                            fromId: id2.uuid,
+                            toId: id1.uuid
+                        }
+                    ]
+                },
+
+            })
+
+            let messagesData = await tx.message.findMany({
+                where: {
+                    OR: [
+                        {
+                            id: { gt: messageID.id },
+                            fromId: id1.uuid,
+                            toId: id2.uuid
+                        },
+                        {
+                            id: { gt: messageID.id },
+                            fromId: id2.uuid,
+                            toId: id1.uuid
+                        }
+                    ]
+                },
+                orderBy: {
+                    id: "asc"
+                },
+                take: max
+            })
+
+            let remain = n - messagesData.length
+
+            let messages: Message[] = messagesData.map(data => {
+                return new Message(
+                    new MessageID(data.id),
+                    new UserID(data.fromId),
+                    new UserID(data.toId),
+                    new DateTime(data.date.toISOString()),
+                    new Content(data.content)
+                )
+            })
+
+            return [messages, remain]
+        })
     }
 
     async create(from: UserID, to: UserID, sended: DateTime, content: Content): Promise<Message> {

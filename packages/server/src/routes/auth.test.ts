@@ -9,6 +9,7 @@ import { UUIDGeneratorImpl } from '../infra/uuid-generator';
 import { HashManager } from '../services/hash';
 import { HashManagerImpl } from '../infra/hash-manager';
 import { Password } from '../services/auth';
+import { cleanDatabase } from '../seeds/utils';
 
 let prismaClient: PrismaClient;
 let userRepository: UserRepository;
@@ -16,15 +17,18 @@ let uuidGenerator: UUIDGenerator;
 let hashManager: HashManager;
 
 beforeEach(async () => {
-    prismaClient = new PrismaClient()
     userRepository = new UserRepositoryPrisma(prismaClient)
     uuidGenerator = new UUIDGeneratorImpl()
     hashManager = new HashManagerImpl()
 
-    await prismaClient.user.deleteMany()
+    cleanDatabase()
 })
 
-afterEach(async () => {
+beforeAll(async ()=> {
+    prismaClient = new PrismaClient()
+})
+
+afterAll(async () => {
     await prismaClient.$disconnect()
 })
 
