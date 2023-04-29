@@ -1,9 +1,9 @@
-import { DateTime } from "luxon";
 import { UserID } from "../model/user";
 import { MessageRepository } from "../repository/message-repository";
 import { UserRepository } from "../repository/user-repository";
 import { SessionManager } from "./session";
-import { Content, MessageID } from "../model/message";
+import { Content, Message, MessageID } from "../model/message";
+import { DateTime } from "../core/timestamp";
 
 export class MessageService {
     private _messageRepository: MessageRepository
@@ -16,7 +16,7 @@ export class MessageService {
         this._sessionManager = sessionManager
     }
 
-    async send(aToken: string, aDestinary: string, aContent: string) {
+    async send(aToken: string, aDestinary: string, aContent: string): Promise<Message> {
 
         let session = await this._sessionManager.find(aToken);
         if (session == null) throw new Error("session not found")
@@ -24,7 +24,7 @@ export class MessageService {
         let user = await this._userRepository.find(new UserID(aDestinary))
         if (user == null) throw new Error("User not found")
 
-        await this._messageRepository.create(
+        return await this._messageRepository.create(
             session.loggedUser,
             user.id,
             DateTime.now(),

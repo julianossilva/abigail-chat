@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client"
 import { SessionManagerPrisma } from "./session"
-import { UUIDGeneratorImpl } from "./uuid-generator"
 import { UserID } from "../model/user"
 import { DAY, DateTime } from "../core/timestamp"
 

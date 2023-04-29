@@ -5,20 +5,44 @@ import { UUIDGeneratorImpl } from './infra/uuid-generator';
 import { HashManagerImpl } from './infra/hash-manager';
 import { UserRepositoryPrisma } from './infra/user-repository';
 import { PrismaClient } from '@prisma/client';
+import { messageRoutes } from './routes/messages';
+import { MessageService } from './services/message';
+import { MessageRepositoryPrisma } from './infra/message-repository';
+import { SessionManagerPrisma } from './infra/session';
 
 export function createApp() {
     const app = express();
     app.use(express.json())
 
+    /**
+     * Prisma Client
+     */
+    let prismaClient = new PrismaClient()
+
+    /**
+     * Utilities
+     */
     let uuidGenerator = new UUIDGeneratorImpl()
     let hashManager = new HashManagerImpl()
+    let sessionManager = new SessionManagerPrisma("shhh", prismaClient)
 
-
-    let prismaClient = new PrismaClient()
+    /**
+     * Repositories
+     */
     let userRepository = new UserRepositoryPrisma(prismaClient)
-    let authService = new AuthService(uuidGenerator, hashManager, userRepository)
+    let messageRepository = new MessageRepositoryPrisma(prismaClient)
 
+    /**
+     * Services
+     */
+    let authService = new AuthService(uuidGenerator, hashManager, userRepository, sessionManager)
+    let messageService = new MessageService(messageRepository, userRepository, sessionManager)
+
+    /**
+     * Routes
+     */
     app.use(authRoutes(authService))
+    app.use(messageRoutes(messageService))
 
     return app
 }

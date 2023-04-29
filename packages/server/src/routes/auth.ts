@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express'
-import { AuthService, UserNotFound } from '../services/auth'
+import { AuthService, UserNotFoundError } from '../services/auth'
 import joi from 'joi'
 import { RegistrationError } from '../services/errors/auth-errors'
 
@@ -57,7 +57,7 @@ export function authRoutes(authService: AuthService) {
                 token
             })
         } catch(err) {
-            if (err instanceof UserNotFound) {
+            if (err instanceof UserNotFoundError) {
                 res.status(404).send()
             } else {
                 res.status(500).send()

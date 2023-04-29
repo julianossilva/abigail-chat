@@ -1,6 +1,7 @@
 import { Email, PasswordHash, User, UserID, Username } from "../model/user";
 import { UserRepository } from "../repository/user-repository";
 import { HashManager } from "./hash";
+import { SessionManager } from "./session";
 import { UUIDGenerator } from "./uuid";
 
 export class Password {
@@ -37,7 +38,8 @@ export class AuthService {
     constructor(
         private uuidGenerator: UUIDGenerator,
         private hashManager: HashManager,
-        private userRepository: UserRepository
+        private userRepository: UserRepository,
+        private sessionManager: SessionManager
     ) { }
 
     async register(aUsername: string, anEmail: string, aPassword: string) {
@@ -48,14 +50,14 @@ export class AuthService {
         let email = new Email(anEmail)
         let password = new Password(aPassword);
 
-        let hash = await this.hashManager.hash(password)
+        let hash = await this.hashManager.hash(password);
 
         let user = new User(
             userID,
             username,
             email,
             hash
-        )
+        );
 
         await this.userRepository.create(user)
     }
@@ -63,7 +65,7 @@ export class AuthService {
     async authenticate(anUsername: string, aPassword: string): Promise<string> {
         let username = new Username(anUsername);
         let password = new Password(aPassword);
-        
+
         let user = await this.userRepository.findByUsername(username)
         if (user == null) {
             throw new UserNotFoundError()
@@ -71,10 +73,15 @@ export class AuthService {
 
         let hash = new PasswordHash(user.hash.hash)
 
-        if (await this.hashManager.compare(password, hash)) {
-            throw new Error("return a token")
+        let passwordMatch = await this.hashManager.compare(password, hash)
+        if (!passwordMatch) {
+            throw new WrongPasswordError()
         }
 
-        throw new WrongPasswordError()
+        let session = await this.sessionManager.create({
+            loggedUserID: user.id
+        })
+
+        return session.token
     }
 }

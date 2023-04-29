@@ -1,4 +1,4 @@
-import { Time } from "../core/timestamp"
+import { DateTime } from "../core/timestamp"
 import { UserID } from "./user"
 
 export class MessageID {
@@ -47,10 +47,10 @@ export class Message {
     private _from: UserID
     private _to: UserID;
 
-    private _sended: Time
+    private _sended: DateTime
     private _content: Content
 
-    constructor(id: MessageID, from: UserID, to: UserID, sended: Time, content: Content) {
+    constructor(id: MessageID, from: UserID, to: UserID, sended: DateTime, content: Content) {
         this._id = id
         this._from = from;
         this._to = to;
@@ -70,7 +70,7 @@ export class Message {
         return this._to
     }
 
-    get sended(): Time {
+    get sended(): DateTime {
         return this._sended
     }
 

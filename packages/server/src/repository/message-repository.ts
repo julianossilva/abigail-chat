@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime } from "../core/timestamp";
 import { Content, Message, MessageID } from "../model/message";
 import { UserID } from "../model/user";
 

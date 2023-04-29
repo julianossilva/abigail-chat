@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { UserRepositoryPrisma } from "./user-repository"
 import { Email, PasswordHash, User, UserID, Username } from "../model/user";
-import { Password } from "../services/auth";
 
 let prismaClient: PrismaClient
 
@@ -14,11 +13,9 @@ afterEach(async () => {
     await prismaClient.$disconnect()
 })
 
-test("create user", async () => {
+test("create a new user", async () => {
 
-    if ((await prismaClient.user.count()) != 0) {
-        throw new Error("non empty users")
-    }
+    expect(await prismaClient.user.count()).toBe(0)
 
     let userRepositoryPrisma = new UserRepositoryPrisma(prismaClient);
 
@@ -44,7 +41,6 @@ test("create user", async () => {
 })
 
 test("find user", async () => {
-    let userRepositoryPrisma = new UserRepositoryPrisma(prismaClient);
 
     await prismaClient.user.create({
         data: {
@@ -59,17 +55,9 @@ test("find user", async () => {
 
     let user = await userRepository.find(new UserID("e54a765d-8d9c-456b-9155-0fae19d3b19d"))
 
-    if (user == null) throw new Error("user not finded")
-    if (user.id.uuid != "e54a765d-8d9c-456b-9155-0fae19d3b19d") {
-        throw new Error("user saved with wrong data")
-    }
-    if (user.email.email != "ana@email.com") {
-        throw new Error("user saved with wrong data")
-    }
-    if (user.username.username != "ana") {
-        throw new Error("user saved with wrong data")
-    }
-    if (user.hash.hash != "shhh") {
-        throw new Error("user saved with wrong data")
-    }
+    expect(user).not.toBeNull()
+    expect(user?.id.uuid).toBe("e54a765d-8d9c-456b-9155-0fae19d3b19d")
+    expect(user?.email.email).toBe("ana@email.com")
+    expect(user?.username.username).toBe("ana")
+    expect(user?.hash.hash).toBe("shhh")
 })
