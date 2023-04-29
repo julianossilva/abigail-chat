@@ -7,15 +7,14 @@ let prismaClient: PrismaClient
 
 
 beforeEach(async () => {
+    prismaClient = new PrismaClient()
     await cleanDatabase()
 })
 
-beforeAll(async ()=> {
-    prismaClient = new PrismaClient()
-})
 
-afterAll(async () => {
+afterEach(async () => {
     await prismaClient.$disconnect()
+    
 })
 
 test("create a new user", async () => {

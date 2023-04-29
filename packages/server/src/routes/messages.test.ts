@@ -13,17 +13,15 @@ import { DateTime } from "../core/timestamp"
 let prismaClient: PrismaClient
 let messageRepository: MessageRepository
 
-beforeAll(async ()=> {
-    prismaClient = new PrismaClient()
-})
 
 beforeEach(async () => {
     await cleanDatabase()
+    prismaClient = new PrismaClient()
 
     messageRepository = new MessageRepositoryPrisma(prismaClient)
 })
 
-afterAll(async () => {
+afterEach(async () => {
     await prismaClient.$disconnect()
 })
 

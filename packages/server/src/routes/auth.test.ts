@@ -16,7 +16,12 @@ let userRepository: UserRepository;
 let uuidGenerator: UUIDGenerator;
 let hashManager: HashManager;
 
+
+
+
+
 beforeEach(async () => {
+    prismaClient = new PrismaClient()
     userRepository = new UserRepositoryPrisma(prismaClient)
     uuidGenerator = new UUIDGeneratorImpl()
     hashManager = new HashManagerImpl()
@@ -24,11 +29,7 @@ beforeEach(async () => {
     cleanDatabase()
 })
 
-beforeAll(async ()=> {
-    prismaClient = new PrismaClient()
-})
-
-afterAll(async () => {
+afterEach(async () => {
     await prismaClient.$disconnect()
 })
 

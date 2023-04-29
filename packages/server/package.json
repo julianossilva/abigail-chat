@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "pretest": "tsc",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "prestart": "prisma generate && tsc",
+    "start": "node ./dist/main.js",
+    "dev": "nodemon --exec \"npm start\" -e ts,prisma"
   },
   "author": "",
   "license": "MIT",

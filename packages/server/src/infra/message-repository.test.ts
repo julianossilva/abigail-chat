@@ -7,17 +7,16 @@ import { cleanDatabase } from "../seeds/utils"
 
 let prismaClient: PrismaClient
 
-beforeAll(async ()=> {
-    prismaClient = new PrismaClient()
-})
 
-afterAll(async () => {
-    await prismaClient.$disconnect()
-})
+
 
 beforeEach(async () => {
-
+    prismaClient = new PrismaClient()
     await cleanDatabase()
+})
+
+afterEach(async () => {
+    await prismaClient.$disconnect()
 })
 
 
